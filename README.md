@@ -2,6 +2,29 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## How to Build and Run the Extension
+
+First, make sure you have node installed.
+After cloning the repo open files in some text editor (I like VSCode).
+
+Whenever you pull code from the repo you should run:
+
+### `npm install`
+
+in your terminal under the extension folder (For me it's under C:\Users\joshu\CSE190\extension).
+This will grab any dependencies that may have been added in the latest build.
+
+To build the extension and make it ready for Chrome, run:
+
+### `npm run build`
+
+When that's done open Chrome and click the puzzle piece in the top right then click manage extensions (or go to chrome://extensions/).
+On the extensions screen, click "Load Unpacked" on the top left.
+Navigate to your extension directory and select the "build" folder.
+You should now see a new extension (currently called "CSE190 Chrome Extension")
+To see the popup menu, click the puzzle piece in the top right again and click the extension.
+
+# General Info
 ## Available Scripts
 
 In the project directory, you can run:
