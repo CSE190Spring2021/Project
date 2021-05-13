@@ -21,7 +21,7 @@ To build the extension and make it ready for Chrome, run:
 When that's done open Chrome and click the puzzle piece in the top right then click manage extensions (or go to chrome://extensions/).
 On the extensions screen, click "Load Unpacked" on the top left.
 Navigate to your extension directory and select the "build" folder.
-You should now see a new extension (currently called "CSE190 Chrome Extension")
+You should now see a new extension (currently called "CSE190 Chrome Extension").
 To see the popup menu, click the puzzle piece in the top right again and click the extension.
 
 # General Info
