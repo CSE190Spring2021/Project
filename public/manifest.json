@@ -10,10 +10,6 @@
     "default_popup": "./popup/popup.html"
   },
 
-  "background":{
-    "persistent": false
-  },
-
   "icons":{
     "16": "logo192.png",
     "48": "logo192.png",

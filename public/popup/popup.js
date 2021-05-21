@@ -1,21 +1,32 @@
-function cookieinfo(){
+function tabInfo(){
    
-  chrome.tabs.query({"status":"complete","windowId":chrome.windows.WINDOW_ID_CURRENT,"active":true}, function(tab){
-         console.log(JSON.stringify(tab));
-         chrome.cookies.getAll({"url":tab[0].url},function (cookie){
-             console.log(cookie.length);
-             allCookieInfo = "";
-             for(i=0;i<cookie.length;i++){
-                 console.log(JSON.stringify(cookie[i]));
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
-                 allCookieInfo = allCookieInfo + JSON.stringify(cookie[i]);
-             }
-             //localStorage.currentCookieInfo = allCookieInfo;
-             //document.write(allCookieInfo);
-             //cookieCount++;
-             document.write("Cookies detected: " + cookie.length);
-         });
- });
+        // Should only be one tab so can just grab the first one
+        var activeTab = tabs[0];
+
+        // Make URL object
+        var url = new URL(activeTab.url);
+
+        // Get URL length
+        var url_len = activeTab.url.length;
+
+        // Get top-level domain (com, net, org, etc.)
+        var tld = url.hostname.split(".").slice(-1)[0];
+        
+        // Get protocol (1 for https, 0 for http)
+        var protocol = (url.protocol=="https:") ? 1 : 0;
+
+        document.writeln("URL length: " + url_len);
+        document.writeln("Top-level Domain: " + tld);
+        document.writeln("Protocol: " + protocol);
+
+        // Get number of cookies
+        chrome.cookies.getAll({"url":activeTab.url}, function (cookie){
+            document.writeln("Cookies detected: " + cookie.length);
+        });
+
+     });
 
 }
-window.onload=cookieinfo;
+window.onload=tabInfo;
