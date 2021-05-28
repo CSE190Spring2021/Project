@@ -14,7 +14,7 @@ function tabInfo(){
         console.log(activeTab.url);
         document.getElementById("url").innerHTML=activeTab.url;
         //send to server the url of the website
-        var safeStatus = postData('http://143.198.97.103:8080/', { answer: activeTab.url })
+        var safeStatus = postData('http://143.198.97.103:8080/', { addr: activeTab.url })
         .then(data => {
             document.getElementById("response").innerHTML=data.Resp + "<br>";; // JSON data parsed by `data.json()` call
         });
