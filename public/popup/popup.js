@@ -41,6 +41,7 @@ function tabInfo(){
       sitesArray.forEach((item) => {
         var li = document.createElement("li");
         li.setAttribute('id', item);
+        //li.setAttribute('class',)
         li.appendChild(document.createTextNode(item));
         ul.appendChild(li);
       })
@@ -50,14 +51,14 @@ function tabInfo(){
       // Load and parse site list as an array
       var sites = localStorage.getItem("sites");
       var sitesArray = JSON.parse(sites);
-      // Mark the website list location
-      var ul = document.getElementById("approvedWebsiteList");
-      sitesArray.forEach((item) => {
-        ul.removeChild(document.getElementById(item));
-      })
 
-      //var item = document.getElementById(candidate.value);
-      //ul.removeChild(item);
+      // For each site in the array, locate it and delte it from DOM
+      sitesArray.forEach((item) => {
+        var toRemove = document.getElementById(item);
+        if (toRemove != null) {
+          toRemove.parentElement.removeChild(toRemove);
+        }
+      })
     }
 
     document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
@@ -66,17 +67,14 @@ function tabInfo(){
     if (document.getElementById("toggle").checked == false){
         document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
         clearWebsiteList(); 
-        document.getElementsByClassName("visible").style.display = "none";
-     
+        document.getElementById("visible").style.display = "none";
 
-        // document.getElementById("intensityButtons");
     }
     // Get number of cookies
     else {
       document.getElementById("trackers").innerHTML = "Extension enabled";
       populateWebsiteList();
-      document.getElementsByClassName("visible").style.display = "block";
-      
+      document.getElementById("visible").style.display = "block";
     }
   });
 }
