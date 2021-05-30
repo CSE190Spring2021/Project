@@ -5,7 +5,12 @@ document.getElementById("toggle").checked = JSON.parse(localStorage.getItem("tog
 // Also set the intensity button selection
 var intensityButtonChecked = JSON.parse(localStorage.getItem("intensitySelection"));
 
-
+// Populate website information here, currently just an array for testing 
+// Right now the site list reloads everytime the user closes/opens the extension
+// Need to add functionality to talk to the server to get updated list when
+// a user adds/ removes site
+var testWebsites = ["https://ucsd.edu", "https://google.com", "https://welcome.com", "https://thispersondoesnotexist.com"];
+localStorage.setItem("sites", JSON.stringify(testWebsites));
 
 document.getElementById("toggle").addEventListener("click", tabInfo);
 
@@ -14,16 +19,16 @@ function tabInfo(){
   // User clicked the toggle switch to get here, save its new state
   localStorage.setItem("toggleState", JSON.stringify(document.getElementById("toggle").checked));
   
+  /* Populate intensity button choice from previous session and listen for changes */
+
   // If no intensity is chosen
   if (intensityButtonChecked == null) {
     // Check easy by default
     document.getElementById("easy").checked = true;  
-  } 
+  } else {
   // Else set intensity to persist from last session
-  else {
     document.forms.intensityButtons.intensity.value = intensityButtonChecked;  
   }
-
   // Listen for the user to change the intensity selection
   document.addEventListener('input', (e) => {
     if (e.target.getAttribute('name') == "intensity") {
@@ -32,7 +37,10 @@ function tabInfo(){
     }
   })
   
+
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+
+    /* Display toggle switch, URL and enabled/disabled message always */
 
     // Should only be one tab so can just grab the first one
     var activeTab = tabs[0];
@@ -51,46 +59,60 @@ function tabInfo(){
     // Set toggle switch to correct state
     document.getElementById("toggle").checked = toggleState;
 
-    // Dummy array for testing website list storage locally
-    var testWebsites = ["Website 1", "Website 2", "Website 3"];
-    // Stringify the array for local storage
-    localStorage.setItem("sites", JSON.stringify(testWebsites));
  
-  
-    
-    // If the toggle is off
+    /* Handle user enabling/disabling extension via toggle switch */
+
+    // Toggle off extension disabled
     if (document.getElementById("toggle").checked == false){
       document.getElementById("enable").innerHTML = "Enable Extension?";
       document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
-      // Deletes the websites which are children objects of their parent node "websiteList"
+      // Delete the children of the "approvedWebsiteList" ul
       clearWebsiteList(); 
+      // Make the div that holds all the enabled information hide
       document.getElementById("visible").style.display = "none";
-    }
-    // Else the toggle is on
-    else {
+    } else {
+      // Toggle on extension enabled
       document.getElementById("enable").innerHTML = "Disable Extension?";
       document.getElementById("trackers").innerHTML = "Extension enabled";
       document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
       document.getElementById("websiteList").innerHTML = "List of Approved Websites (click site to remove)";
-      // Populates the websites as child objects of their parent node "websiteList"
+      // Add li children to the "approvedWebsiteList" ul
       populateWebsiteList();
+      // Make the div that holds all the enabled information show
       document.getElementById("visible").style.display = "block";
     } 
+
+    /* Helper methods */
 
     // Method to dynamically add website names (li) items to an unordered list (ul)
     function populateWebsiteList(){
       // Load and parse site list as an array
       var sites = localStorage.getItem("sites");
       var sitesArray = JSON.parse(sites);
-      // Mark the website list location
+      // Mark the website list location on the extension
       var ul = document.getElementById("approvedWebsiteList");
       // Iterate the list adding each site as an li child to the ul
       sitesArray.forEach((item) => {
         var li = document.createElement("li");
+        // Remove button to left of each website name
+        var button = document.createElement("button");
+        button.innerHTML = "Remove";
+        // Set button class to add separation between button and website name
+        button.setAttribute('class', "listSeparation");
+        // Make button remove website from list when clicked
+        button.addEventListener("click", function() {
+          removeItem(item);
+          // Delete the item from the sites array
+          sitesArray.splice(sitesArray.indexOf(item), 1);
+          // Update sites array in local storage
+          localStorage.setItem("sites", JSON.stringify(sitesArray));
+        })
+        // This li is titled with the website name from the array
         li.setAttribute('id', item);
-        // Make it clickable to be removed
-        li.setAttribute('onclick', removeItem(item))
+        // Put the button next to the website name
+        li.appendChild(button);
         li.appendChild(document.createTextNode(item));
+        // Finally add the li to the il
         ul.appendChild(li);
       })
     }
@@ -106,16 +128,15 @@ function tabInfo(){
       })
     }
   
-    // Method to remove an item from the DOM
+    // Method to remove an item from the DOM if it exists
     function removeItem(item) {
       var toRemove = document.getElementById(item);
       if (toRemove != null) {
         toRemove.parentElement.removeChild(toRemove);
       }
     }
-
-  });
-}
+  }); // chrome.tabs.query () end
+} // tabInfo() end
 
   
         /*
