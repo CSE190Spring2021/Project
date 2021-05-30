@@ -2,16 +2,36 @@
 
 // When the user opens the extension, set the toggle switch to what the user left it
 document.getElementById("toggle").checked = JSON.parse(localStorage.getItem("toggleState"));
+// Also set the intensity button selection
+var intensityButtonChecked = JSON.parse(localStorage.getItem("intensitySelection"));
 
-// When the extension is open toggling the switch calls tabInfo()
+
+
 document.getElementById("toggle").addEventListener("click", tabInfo);
 
+// This method runs when the user opens the extension
 function tabInfo(){
   // User clicked the toggle switch to get here, save its new state
-  localStorage.setItem("toggleState", document.getElementById("toggle").checked);
+  localStorage.setItem("toggleState", JSON.stringify(document.getElementById("toggle").checked));
   
- 
+  // If no intensity is chosen
+  if (intensityButtonChecked == null) {
+    // Check easy by default
+    document.getElementById("easy").checked = true;  
+  } 
+  // Else set intensity to persist from last session
+  else {
+    document.forms.intensityButtons.intensity.value = intensityButtonChecked;  
+  }
 
+  // Listen for the user to change the intensity selection
+  document.addEventListener('input', (e) => {
+    if (e.target.getAttribute('name') == "intensity") {
+      // Store the change in local storage
+      localStorage.setItem("intensitySelection", JSON.stringify(e.target.value));
+    }
+  })
+  
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
     // Should only be one tab so can just grab the first one
@@ -35,24 +55,24 @@ function tabInfo(){
     var testWebsites = ["Website 1", "Website 2", "Website 3"];
     // Stringify the array for local storage
     localStorage.setItem("sites", JSON.stringify(testWebsites));
+ 
   
     
-    //check if the on button for the extension is switched to on
-    // Toggle is off
+    // If the toggle is off
     if (document.getElementById("toggle").checked == false){
       document.getElementById("enable").innerHTML = "Enable Extension?";
       document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
+      // Deletes the websites which are children objects of their parent node "websiteList"
       clearWebsiteList(); 
       document.getElementById("visible").style.display = "none";
-
     }
-    // Get number of cookies
-    // Toggle is on
+    // Else the toggle is on
     else {
       document.getElementById("enable").innerHTML = "Disable Extension?";
       document.getElementById("trackers").innerHTML = "Extension enabled";
       document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
       document.getElementById("websiteList").innerHTML = "List of Approved Websites (click site to remove)";
+      // Populates the websites as child objects of their parent node "websiteList"
       populateWebsiteList();
       document.getElementById("visible").style.display = "block";
     } 
@@ -74,25 +94,25 @@ function tabInfo(){
         ul.appendChild(li);
       })
     }
-    
+
+    // Method to dynamically delete website names (li) items from an unordered list (ul) 
+    function clearWebsiteList(){
+      // Load and parse site list as an array
+      var sites = localStorage.getItem("sites");
+      var sitesArray = JSON.parse(sites);
+      // For each site in the array, locate it and delete it from DOM
+      sitesArray.forEach((item) => {
+        removeItem(item);
+      })
+    }
+  
+    // Method to remove an item from the DOM
     function removeItem(item) {
       var toRemove = document.getElementById(item);
       if (toRemove != null) {
         toRemove.parentElement.removeChild(toRemove);
       }
     }
-
-    function clearWebsiteList(){
-      // Load and parse site list as an array
-      var sites = localStorage.getItem("sites");
-      var sitesArray = JSON.parse(sites);
-
-      // For each site in the array, locate it and delte it from DOM
-      sitesArray.forEach((item) => {
-        removeItem(item);
-      })
-    }
-
 
   });
 }
