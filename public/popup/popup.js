@@ -9,7 +9,7 @@ var intensityButtonChecked = JSON.parse(localStorage.getItem("intensitySelection
 // Right now the site list reloads everytime the user closes/opens the extension
 // Need to add functionality to talk to the server to get updated list when
 // a user adds/ removes site
-var testWebsites = ["https://ucsd.edu", "https://google.com", "https://welcome.com", "https://thispersondoesnotexist.com"];
+var testWebsites = ["https://ucsd.edu", "https://google.com", "https://welcome.com"];
 localStorage.setItem("sites", JSON.stringify(testWebsites));
 
 document.getElementById("toggle").addEventListener("click", tabInfo);
@@ -18,6 +18,7 @@ document.getElementById("toggle").addEventListener("click", tabInfo);
 function tabInfo(){
   // User clicked the toggle switch to get here, save its new state
   localStorage.setItem("toggleState", JSON.stringify(document.getElementById("toggle").checked));
+  intensityButtonChecked = JSON.parse(localStorage.getItem("intensitySelection"));
   
   /* Populate intensity button choice from previous session and listen for changes */
 
@@ -32,6 +33,8 @@ function tabInfo(){
   // Listen for the user to change the intensity selection
   document.addEventListener('input', (e) => {
     if (e.target.getAttribute('name') == "intensity") {
+      // Set the change on the extension
+      //document.forms.intensityButtons.intensity.value = e.target.value;  
       // Store the change in local storage
       localStorage.setItem("intensitySelection", JSON.stringify(e.target.value));
     }
@@ -73,16 +76,40 @@ function tabInfo(){
     } else {
       // Toggle on extension enabled
       document.getElementById("enable").innerHTML = "Disable Extension?";
-      document.getElementById("trackers").innerHTML = "Extension enabled";
+      document.getElementById("trackers").innerHTML = "Extension enabled. Tracker information below.";
       document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
-      document.getElementById("websiteList").innerHTML = "List of Approved Websites (click site to remove)";
+      document.getElementById("websiteList").innerHTML = "List of Approved Websites";
+      //document.getElementById("addQuestion").innerHTML = "Would you like to add this site to the list of approved sites?"
       // Add li children to the "approvedWebsiteList" ul
       populateWebsiteList();
+      // get tracker information
+      var cookieLength = populateTrackerList();
+
+      document.getElementById("trackerInformation").innerHTML = "Detected Tracker Information: " + cookieLength;
+
       // Make the div that holds all the enabled information show
       document.getElementById("visible").style.display = "block";
     } 
 
     /* Helper methods */
+    function populateTrackerList() {
+      //document.writeln("Cookies detected: " + cookie.length);
+      //document.getElementById("trackers").innerHTML="Number of trackers on this website: " + cookie.length + '<br>';
+      //if (cookie.length > 0) {
+      //    console.log(cookie);
+      //    console.log(cookie[0]["domain"]);
+      //}
+      var cookies = document.cookie.split(';');
+      var returnArray = '';
+      for (var i = 1; i <= cookies.length; i++) {
+        returnArray += i + ' - ' + cookies[i-1] + "<br>";
+      }
+      return returnArray
+      //return cookie.lenth;
+    }
+
+
+
 
     // Method to dynamically add website names (li) items to an unordered list (ul)
     function populateWebsiteList(){
@@ -158,45 +185,14 @@ function tabInfo(){
       // document.writeln("Top-level Domain: " + tld);
       // document.writeln("Protocol: " + protocol);
 
-
-
-
-
-          chrome.cookies.getAll({"url":activeTab.url}, function (cookie){
           //document.writeln("Cookies detected: " + cookie.length);
             document.getElementById("trackers").innerHTML="Number of trackers on this website: " + cookie.length + '<br>';
             if (cookie.length > 0) {
                 console.log(cookie);
                 console.log(cookie[0]["domain"]);
             }
-        document.getElementById("intensityQuestion");
-        document.getElementById("intensityButtons");
-        
-        var list = document.getElementById("approvedWebsiteList");
+       
 
-
-
-        var approvedWebsites = new Array(3);
-        approvedWebsites[0] = "Website 1";
-        approvedWebsites[1] = "Website 2";
-        approvedWebsites[2] = "Website 3";
-
-        localStorage.setItem("sites", JSON.stringify(approvedWebsites));
-
-        approvedWebsites.forEach((item) => {
-          var li = document.createElement('li');
-          li.appendChild(document.createTextNode(item));
-          list.appendChild(li);
-        })
-          //buttons for different extension intensities
-          // document.getElementById("intensityButtons").innerHTML= '<p> How intense would you like the extension to work?</p> <br>' + '<input type="radio" name="favourite_colour"' +
-          // 'value="low" checked> Low - only warns when there are 30 or more cookies <br>' + 
-          // '<input type="radio" name="favourite_colour"' + 
-          // 'value="medium"> Medium - only warns when there are 20 or more cookies<br>' + 
-          // '<input type="radio" name="favourite_colour"' +
-          // 'value="high"> High - only warns when there are 10 or more cookies <br>';
-      });
-    }
       
 
   });
