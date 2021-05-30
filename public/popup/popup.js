@@ -1,34 +1,61 @@
 //const { computeHeadingLevel } = require("@testing-library/dom");
 
+// When the user opens the extension, set the toggle switch to what the user left it
+document.getElementById("toggle").checked = JSON.parse(localStorage.getItem("toggleState"));
+
+// When the extension is open toggling the switch calls tabInfo()
 document.getElementById("toggle").addEventListener("click", tabInfo);
 
-
-
 function tabInfo(){
-   
+  // User clicked the toggle switch to get here, save its new state
+  localStorage.setItem("toggleState", document.getElementById("toggle").checked);
+  
+ 
+
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
     // Should only be one tab so can just grab the first one
     var activeTab = tabs[0];
-
-    // // Make URL object
+    // Make URL object and display it in the extension. 
     var url = new URL(activeTab.url);
     console.log(activeTab.url);
+    // URL displays whether toggle is on or off
     document.getElementById("url").innerHTML=activeTab.url;
-    //send to server the url of the website
+    // Send to server the url of the website
     var safeStatus = postData('http://143.198.97.103:8080/', { answer: activeTab.url })
     .then(data => {
         document.getElementById("response").innerHTML=data.Resp + "<br>";; // JSON data parsed by `data.json()` call
     }); 
-
+    // Retrieve toggle switch state from local storage
+    var toggleState = JSON.parse(localStorage.getItem("toggleState"));
+    // Set toggle switch to correct state
+    document.getElementById("toggle").checked = toggleState;
 
     // Dummy array for testing website list storage locally
     var testWebsites = ["Website 1", "Website 2", "Website 3"];
-    
     // Stringify the array for local storage
     localStorage.setItem("sites", JSON.stringify(testWebsites));
+  
+    
+    //check if the on button for the extension is switched to on
+    // Toggle is off
+    if (document.getElementById("toggle").checked == false){
+      document.getElementById("enable").innerHTML = "Enable Extension?";
+      document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
+      clearWebsiteList(); 
+      document.getElementById("visible").style.display = "none";
 
-
+    }
+    // Get number of cookies
+    // Toggle is on
+    else {
+      document.getElementById("enable").innerHTML = "Disable Extension?";
+      document.getElementById("trackers").innerHTML = "Extension enabled";
+      document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
+      document.getElementById("websiteList").innerHTML = "List of Approved Websites (click site to remove)";
+      populateWebsiteList();
+      document.getElementById("visible").style.display = "block";
+    } 
 
     // Method to dynamically add website names (li) items to an unordered list (ul)
     function populateWebsiteList(){
@@ -41,12 +68,20 @@ function tabInfo(){
       sitesArray.forEach((item) => {
         var li = document.createElement("li");
         li.setAttribute('id', item);
-        //li.setAttribute('class',)
+        // Make it clickable to be removed
+        li.setAttribute('onclick', removeItem(item))
         li.appendChild(document.createTextNode(item));
         ul.appendChild(li);
       })
     }
     
+    function removeItem(item) {
+      var toRemove = document.getElementById(item);
+      if (toRemove != null) {
+        toRemove.parentElement.removeChild(toRemove);
+      }
+    }
+
     function clearWebsiteList(){
       // Load and parse site list as an array
       var sites = localStorage.getItem("sites");
@@ -54,31 +89,15 @@ function tabInfo(){
 
       // For each site in the array, locate it and delte it from DOM
       sitesArray.forEach((item) => {
-        var toRemove = document.getElementById(item);
-        if (toRemove != null) {
-          toRemove.parentElement.removeChild(toRemove);
-        }
+        removeItem(item);
       })
     }
 
-    document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
-    document.getElementById("websiteList").innerHTML = "List of Approved Websites"
-    //check if the on button for the extension is switched to on
-    if (document.getElementById("toggle").checked == false){
-        document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
-        clearWebsiteList(); 
-        document.getElementById("visible").style.display = "none";
 
-    }
-    // Get number of cookies
-    else {
-      document.getElementById("trackers").innerHTML = "Extension enabled";
-      populateWebsiteList();
-      document.getElementById("visible").style.display = "block";
-    }
   });
 }
 
+  
         /*
 
 

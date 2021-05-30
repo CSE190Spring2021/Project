@@ -1,27 +1,26 @@
 <html >
 <head>
-    <link rel = "stylesheet" href="popup.css"> 
+   <link rel = "stylesheet" href="popup.css"> 
 </head>
-<body class='body' >
+  <body class='body' >
     
 
     <div id=NumberTrackers style="font-size:17px" >
         
-        <label class="switch">
-            
-            <input type="checkbox", id="toggle">
-            <span class="slider round"></span>
-        </label>
-        <p id="response"> 
+      <label class="switch">
+        <input type="checkbox", id="toggle">
+        <span class="slider round"></span>
+      </label>
 
-        </p>
-        <p style="font-size:17px"> 
-          Enable extension? 
-        </p>
+      <p id="response"></p>
+
+      <p id="enable" style="font-size:17px"></p>
+    
+      <p id="url"></p>
       
-        <p id="url"></p>
-        
-        <p id="trackers"></p>
+      <p id="trackers"></p>
+
+      <!-- The below div shows/hides when switch is toggled -->
       <div id="visible" class="toShow" style="display:none">
 
         <p id="intensityQuestion"></p>
@@ -36,16 +35,15 @@
         </p>
 
         <p id = websiteList>
-          <ul id="approvedWebsiteList">
-          </ul>
-
-        
-      </div>  
+          
+          <ul id="approvedWebsiteList"></ul>
         </p>
+      </div>  
+      <!-- The above div shows/hides when switch is toggled -->
         <script src='popup.js'>  </script>
     </div>
     
    
     
-</body>
+  </body>
 </html>
