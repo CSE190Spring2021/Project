@@ -53,32 +53,33 @@ function tabInfo(){
       // Mark the website list location
       var ul = document.getElementById("approvedWebsiteList");
       sitesArray.forEach((item) => {
-        var li = document.getElementById(item);
-        ul.removeChild(li);
+        ul.removeChild(document.getElementById(item));
       })
 
       //var item = document.getElementById(candidate.value);
       //ul.removeChild(item);
     }
 
+    document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
+    document.getElementById("websiteList").innerHTML = "List of Approved Websites"
     //check if the on button for the extension is switched to on
     if (document.getElementById("toggle").checked == false){
         document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
         clearWebsiteList(); 
+        document.getElementsByClassName("visible").style.display = "none";
+     
 
         // document.getElementById("intensityButtons");
     }
     // Get number of cookies
     else {
-      document.getElementById("trackers").innerHTML="Extension enabled";
+      document.getElementById("trackers").innerHTML = "Extension enabled";
       populateWebsiteList();
+      document.getElementsByClassName("visible").style.display = "block";
       
     }
   });
 }
-
-
-
 
         /*
 

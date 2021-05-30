@@ -15,20 +15,18 @@
         <p id="response"> 
 
         </p>
-        <p id="url">
-
+        <p style="font-size:17px"> 
+          Enable extension? 
         </p>
-        <p style="font-size:17px"> Enable extension? </p>
       
-        <p id="trackers"> 
-
-        </p>
+        <p id="url"></p>
         
-        <p id="intensityQuestion">
-          How intense do you want the extension to work?
-        </p>
+        <p id="trackers"></p>
+      <div class="visible">
 
-        <p id="intensityButtons"> 
+        <p id="intensityQuestion" class></p>
+
+        <p id="intensityButtons">
           <input type="radio" id="easy" name="intensity" value="easy">
           <label for="easy">Easy - Warns when 15+ trackers detected</label><br>
           <input type="radio" id="medium" name="intensity" value="medium">
@@ -37,12 +35,12 @@
           <label for="Hard">Hard - Warns when 3+ trackers detected</label>
         </p>
 
-        <p>
-          List of Approved Websites
+        <p id = websiteList>
           <ul id="approvedWebsiteList">
           </ul>
 
         
+      </div>  
         </p>
         <script src='popup.js'>  </script>
     </div>
