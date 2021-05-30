@@ -1,16 +1,26 @@
 //const { computeHeadingLevel } = require("@testing-library/dom");
 
-// When the user opens the extension, set the toggle switch to what the user left it
+// When the user opens the extension, get the toggle switch value that the user last set
 document.getElementById("toggle").checked = JSON.parse(localStorage.getItem("toggleState"));
-// Also set the intensity button selection
+// Also get the intensity button selection
 var intensityButtonChecked = JSON.parse(localStorage.getItem("intensitySelection"));
 
 // Populate website information here, currently just an array for testing 
 // Right now the site list reloads everytime the user closes/opens the extension
 // Need to add functionality to talk to the server to get updated list when
 // a user adds/ removes site
-var testWebsites = ["https://ucsd.edu", "https://google.com", "https://welcome.com"];
+var testWebsites = ["https://ucsd.edu", "https://google.com", "https://welcome.com",
+"https://fake1.com", "https://fake2.com", "https://fake3.com"];
 localStorage.setItem("sites", JSON.stringify(testWebsites));
+
+// Tracker array for testing
+var testTrackers = ["123abc", "456def", "789ghi", "123jkl", "456mno", "789pqr"];
+localStorage.setItem("trackers", JSON.stringify(testTrackers));
+
+// Arbitrary value set for testing
+var numberOfTrackersDetected = 3;
+// Set to easy = 15
+var trackerWarningThreshold = 16;
 
 document.getElementById("toggle").addEventListener("click", tabInfo);
 
@@ -29,6 +39,19 @@ function tabInfo(){
   } else {
   // Else set intensity to persist from last session
     document.forms.intensityButtons.intensity.value = intensityButtonChecked;  
+    // Set the tracker warning threshold based on the value. 
+    switch (intensityButtonChecked) {
+      case "easy":
+        trackerWarningThreshold = 15;
+        break;
+      case "medium":
+        trackerWarningThreshold = 10;
+        break;
+      case "hard":
+        trackerWarningThreshold = 3;
+      //default:
+      //  trackerWarningThreshold = 15;
+    }
   }
   // Listen for the user to change the intensity selection
   document.addEventListener('input', (e) => {
@@ -68,7 +91,7 @@ function tabInfo(){
     // Toggle off extension disabled
     if (document.getElementById("toggle").checked == false){
       document.getElementById("enable").innerHTML = "Enable Extension?";
-      document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
+      //document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
       // Delete the children of the "approvedWebsiteList" ul
       clearWebsiteList(); 
       // Make the div that holds all the enabled information hide
@@ -76,38 +99,59 @@ function tabInfo(){
     } else {
       // Toggle on extension enabled
       document.getElementById("enable").innerHTML = "Disable Extension?";
-      document.getElementById("trackers").innerHTML = "Extension enabled. Tracker information below.";
+      var trackers = localStorage.getItem("trackers");
+      var trackersArray = JSON.parse(trackers);
+      document.getElementById("trackers").innerHTML = trackersArray.length + " Trackers: (Click tracker number for more info)";
       document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
       document.getElementById("websiteList").innerHTML = "List of Approved Websites";
       //document.getElementById("addQuestion").innerHTML = "Would you like to add this site to the list of approved sites?"
+
+      // Add li children to the "trackerList" ul
+      populateTrackerList();
       // Add li children to the "approvedWebsiteList" ul
       populateWebsiteList();
-      // get tracker information
-      var cookieLength = populateTrackerList();
-
-      document.getElementById("trackerInformation").innerHTML = "Detected Tracker Information: " + cookieLength;
-
       // Make the div that holds all the enabled information show
       document.getElementById("visible").style.display = "block";
     } 
 
     /* Helper methods */
-    function populateTrackerList() {
-      //document.writeln("Cookies detected: " + cookie.length);
-      //document.getElementById("trackers").innerHTML="Number of trackers on this website: " + cookie.length + '<br>';
-      //if (cookie.length > 0) {
-      //    console.log(cookie);
-      //    console.log(cookie[0]["domain"]);
-      //}
-      var cookies = document.cookie.split(';');
-      var returnArray = '';
-      for (var i = 1; i <= cookies.length; i++) {
-        returnArray += i + ' - ' + cookies[i-1] + "<br>";
-      }
-      return returnArray
-      //return cookie.lenth;
+
+
+    function addWebsiteToList () {
+
     }
 
+    // Method to dynamically add tracker names (li) items to an unordered list (ul)
+    function populateTrackerList(){
+      // Load and parse site list as an array
+      var trackers = localStorage.getItem("trackers");
+      var trackersArray = JSON.parse(trackers);
+      // Mark the website list location on the extension
+      var ul = document.getElementById("trackerList");
+      // Iterate the list adding each site as an li child to the ul
+      trackersArray.forEach((item) => {
+        var li = document.createElement("li");
+        var numberButton = document.createElement("button");
+        numberButton.innerHTML = trackersArray.indexOf(item);
+        numberButton.setAttribute('class', "listSeparation");
+        numberButton.addEventListener("click", function() {
+          // Code here to load more tracker info
+          // Or something to help the user make the 
+          // decision to add the website to the list
+          showExtraTrackerInfo();
+          
+        }) 
+        li.setAttribute('id', item);
+        li.appendChild(numberButton);
+        li.appendChild(document.createTextNode(item));
+        // Finally add the li to the il
+        ul.appendChild(li);
+      })
+    }
+
+    function showExtraTrackerInfo() {
+      
+    }
 
 
 

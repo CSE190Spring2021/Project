@@ -17,15 +17,17 @@
     
       <p id="url"></p>
 
-      <p id="trackers"></p>
-    
+      
+
       <!-- The below div shows/hides when switch is toggled -->
       <div id="visible" class="toShow" style="display:none">
 
-        <p id="trackerInformation">
-
-        </p>
-
+        <div style="border: 1px solid black;">
+          <p id="trackers" style="text-align: center;"></p>
+          <p id="trackerListName" style="text-align: center;">
+            <ul id="trackerList" class="unorderedList"></ul>
+          </p>
+        </div>
 
         <p id="intensityQuestion"></p>
 
@@ -33,14 +35,14 @@
           <input type="radio" id="easy" name="intensity" value="easy">
           <label for="easy">Easy - Warns when 15+ trackers detected</label><br>
           <input type="radio" id="medium" name="intensity" value="medium">
-          <label for="Medium">Medium - Warns when 10+ trackers detected</label><br>
+          <label for="medium">Medium - Warns when 10+ trackers detected</label><br>
           <input type="radio" id="hard" name="intensity" value="hard">
-          <label for="Hard">Hard - Warns when 3+ trackers detected</label>
+          <label for="hard">Hard - Warns when 3+ trackers detected</label>
         </form>
 
         <div style="border: 1px solid black;">
           <p id="websiteList" style="text-align: center;">
-            <ul id="approvedWebsiteList"></ul>
+            <ul id="approvedWebsiteList" class="unorderedList"></ul>
           </p>
         </div>
 
