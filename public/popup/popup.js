@@ -30,41 +30,48 @@ function tabInfo(){
 
 
 
-    // Method to dynamically as list items (li) items to an unordered list (ul)
-    function addWebsite(){
-      // Load the list of sites from localStorage. This will load as an array
+    // Method to dynamically add website names (li) items to an unordered list (ul)
+    function populateWebsiteList(){
+      // Load and parse site list as an array
       var sites = localStorage.getItem("sites");
-      sites = JSON.parse(sites);
-
+      var sitesArray = JSON.parse(sites);
       // Mark the website list location
       var ul = document.getElementById("approvedWebsiteList");
-      sites.forEach((item) => {
+      // Iterate the list adding each site as an li child to the ul
+      sitesArray.forEach((item) => {
         var li = document.createElement("li");
-        li.setAttribute('id', item.value);
-        li.appendChild(document.createTextNode(item.value));
+        li.setAttribute('id', item);
+        li.appendChild(document.createTextNode(item));
         ul.appendChild(li);
       })
     }
     
-    function removeWebsite(){
-      var ul = document.getElementById("dynamic-list");
-      var candidate = document.getElementById("candidate");
-      var item = document.getElementById(candidate.value);
-      ul.removeChild(item);
+    function clearWebsiteList(){
+      // Load and parse site list as an array
+      var sites = localStorage.getItem("sites");
+      var sitesArray = JSON.parse(sites);
+      // Mark the website list location
+      var ul = document.getElementById("approvedWebsiteList");
+      sitesArray.forEach((item) => {
+        var li = document.getElementById(item);
+        ul.removeChild(li);
+      })
+
+      //var item = document.getElementById(candidate.value);
+      //ul.removeChild(item);
     }
 
     //check if the on button for the extension is switched to on
     if (document.getElementById("toggle").checked == false){
         document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
-        var list = document.querySelector("approvedWebsiteList");
-        
+        clearWebsiteList(); 
 
         // document.getElementById("intensityButtons");
     }
     // Get number of cookies
     else {
       document.getElementById("trackers").innerHTML="Extension enabled";
-      addWebsite();
+      populateWebsiteList();
       
     }
   });
