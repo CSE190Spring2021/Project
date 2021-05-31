@@ -33,6 +33,12 @@ var trackerWarningThreshold = 16;
 // Listen for toggle button click
 document.getElementById("toggle").addEventListener("click", tabInfo);
 
+  // Whitelist site button 
+  var whitelistButton = document.createElement("button");
+  whitelistButton.innerHTML = "Whitelist this site";
+  var thisParent = document.getElementById("whitelistButton");
+  thisParent.appendChild(whitelistButton);
+
 // This method runs when the user opens the extension
 function tabInfo(){
   // User clicked the toggle switch to get here, save its new state
@@ -91,24 +97,67 @@ function tabInfo(){
       clearWebsiteList(); 
       // Make the div that holds all the enabled information hide
       document.getElementById("visible").style.display = "none";
+    // Toggle on extension enabled
     } else {
-      // Toggle on extension enabled
-      document.getElementById("enable").innerHTML = "Disable Extension?";
-      var trackers = localStorage.getItem("trackers");
-      var trackersArray = JSON.parse(trackers);
-      document.getElementById("trackers").innerHTML = trackersArray.length + " Trackers: (Click tracker number for more info)";
-      document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
-      document.getElementById("websiteList").innerHTML = "List of Approved Websites";
-      // Add li children to the "trackerList" ul
-      populateTrackerList();
-      // Add li children to the "approvedWebsiteList" ul
-      populateWebsiteList();
-      // Make the div that holds all the enabled information show
-      document.getElementById("visible").style.display = "block";
+
+      // Check if this site is already whitelisted
+
+      // Load and parse site list as an array
+      var sites = localStorage.getItem("sites");
+      var sitesArray = JSON.parse(sites);
+      if (sitesArray.includes(activeTab.url)) {
+        // This site is whitelisted, just display remove from whitelist option
+        var thisParent = document.getElementById("removeSite");
+        var removeSiteButton = document.createElement("button");
+        removeSiteButton.innerHTML = "Site is whitelisted by you as safe. Click to remove it";
+        thisParent.appendChild(removeSiteButton); 
+        removeSiteButton.addEventListener("click", function() {
+          // Load and parse site list as an array
+          var sites = localStorage.getItem("sites");
+          var sitesArray = JSON.parse(sites)
+          // Add this site to the site array unless it aleady exists
+          var siteToDelete = activeTab.url;
+          sitesArray.indexOf(siteToDelete) !== -1 && sitesArray.splice(sitesArray.indexOf(siteToDelete), 1);
+          // Update array in local storate
+          localStorage.setItem("sites", JSON.stringify(sitesArray));
+        })
+      // Site is not whitelisted, display everything
+      } else {
+
+        // Toggle on extension enabled
+        document.getElementById("enable").innerHTML = "Disable Extension?";
+        var trackers = localStorage.getItem("trackers");
+        var trackersArray = JSON.parse(trackers);
+        document.getElementById("trackers").innerHTML = trackersArray.length + " Trackers: (Click tracker number for more info)";
+        document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
+        document.getElementById("websiteList").innerHTML = "List of Approved Websites";
+        // Add li children to the "trackerList" ul
+        populateTrackerList();
+        // Add li children to the "approvedWebsiteList" ul
+        populateWebsiteList();
+        // Make the div that holds all the enabled information show
+        document.getElementById("visible").style.display = "block";
+      }
     } 
 
-    // Whitelist site button 
+  
 
+    // Listen for white list click
+    whitelistButton.addEventListener("click", function () {
+      // Load and parse site list as an array
+     var sites = localStorage.getItem("sites");
+     var sitesArray = JSON.parse(sites)
+     // Add this site to the site array unless it aleady exists
+     var siteToAdd = activeTab.url;
+     // If the site is not in the array, then push it. 
+     sitesArray.indexOf(siteToAdd) === -1 ? sitesArray.push(siteToAdd) : console.log("site already in list");
+     // Update array in local storate
+     localStorage.setItem("sites", JSON.stringify(sitesArray));
+     // Then delete the list from the DOM
+     clearWebsiteList();
+     // And repopulate it
+     populateWebsiteList();
+   })
 
     /* Methods to handle the tracker list and tracker additional info */
 
@@ -156,31 +205,13 @@ function tabInfo(){
       if (trackerNumber == 2) { dangerLevel = " *** Do not use this site! *** "};
       li2.innerHTML = "Our Recommendation: " + dangerLevel;
       ul.appendChild(li2);
-      // Add whitelist and close buttons
+      // Add close button
       var popupButton = document.getElementById("popupButton");
       removeAllChildrenFromNode(popupButton);
-      var whitelistButton = document.createElement("button");
-      whitelistButton.innerHTML = "Whitelist this site";
-      popupButton.appendChild(whitelistButton);
       var closeButton = document.createElement("button");
       closeButton.innerHTML = "Close Additional Info";
       popupButton.appendChild(closeButton);
 
-      // Listen for white list click
-      whitelistButton.addEventListener("click", function () {
-         // Load and parse site list as an array
-        var sites = localStorage.getItem("sites");
-        var sitesArray = JSON.parse(sites)
-        // Add this site to the site array unless it aleady exists
-        var siteToAdd = activeTab.url;
-        sitesArray.push(siteToAdd);
-        // Update array in local storate
-        localStorage.setItem("sites", JSON.stringify(sitesArray));
-        // Then delete the list from the DOM
-        clearWebsiteList();
-        // And repopulate it
-        populateWebsiteList();
-      })
 
       // Listen for close additional info click
       popupButton.addEventListener("click", function () {
