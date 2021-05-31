@@ -1,77 +1,50 @@
-<html>
+<html >
 <head>
-   <link rel = "stylesheet" href="popup.css"> 
+    <link rel = "stylesheet" href="popup.css"> 
 </head>
-  <body class='body' >
+<body class='body' >
+    
 
     <div id=NumberTrackers style="font-size:17px" >
         
-      <label class="switch">
-        <input type="checkbox", id="toggle">
-        <span class="slider round"></span>
-      </label>
-
-      <p id="response"></p>
-
-      <p id="enable" style="font-size:17px"></p>
-    
-      <p id="url"></p>
-
-      <p id="removeSite"></p>
-
-      <!-- The below div shows/hides when switch is toggled -->
-      <div id="visible" class="toShow" style="display:none">
-
-        <div style="border: 1px solid black;">
-          <p id="trackers" style="text-align: center;"></p>
-          <p id="trackerListName" style="text-align: center;">
-            <ul id="trackerList" class="unorderedList"></ul>
-          </p>
-        </div>
-
-        <p id="whitelistButton">
+        <label class="switch">
+            
+            <input type="checkbox", id="toggle">
+            <span class="slider round"></span>
+        </label>
+        <p id="response"> 
 
         </p>
+        <p id="url"> 
 
-        <p id="popupTrackerHeadline">
-          <ul id="popupTrackerInfo"></ul>
-          <p id="popupButton"></p>
+        </p>
+        <p style="font-size:17px"> Enable extension? </p>
+      
+        <p id="trackers"> 
+
+        </p>
+        
+        <p id="intensityQuestion">
+          How intense do you want the extension to work?
         </p>
 
-        <p id="intensityQuestion"></p>
-
-        <form name="intensityButtons">
+        <p id="intensityButtons"> 
           <input type="radio" id="easy" name="intensity" value="easy">
           <label for="easy">Easy - Warns when 15+ trackers detected</label><br>
           <input type="radio" id="medium" name="intensity" value="medium">
-          <label for="medium">Medium - Warns when 10+ trackers detected</label><br>
+          <label for="Medium">Medium - Warns when 10+ trackers detected</label><br>
           <input type="radio" id="hard" name="intensity" value="hard">
-          <label for="hard">Hard - Warns when 3+ trackers detected</label>
-        </form>
+          <label for="Hard">Hard - Warns when 3+ trackers detected</label>
+        </p>
 
-        <div style="border: 1px solid black;">
-          <p id="websiteList" style="text-align: center;">
-            <ul id="approvedWebsiteList" class="unorderedList"></ul>
-          </p>
-        </div>
-
-        <!-- do trackers before this
-
-        <p id="addQuestion"></p>
-
-        <form name="addDecision">
-          <input type="radio" id="yes" name="decision" value="yes">
-          <label for="yes">Yes</label><br>
-          <input type="radio" id="no" name="decision" value="no">
-          <label for="no">No</label>
-        </form>
-
-        -->
-
-      </div>  
-      <!-- The above div shows/hides when switch is toggled -->
-
+        <p>
+          List of Approved Websites
+          <ul id="approvedWebsiteList"></ul>
+        </p>
         <script src='popup.js'>  </script>
     </div>
-  </body>
+    
+   
+    
+</body>
 </html>
