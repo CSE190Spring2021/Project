@@ -74,7 +74,7 @@ function tabInfo(){
     var url = new URL(activeTab.url);
     console.log(activeTab.url);
     // URL displays whether toggle is on or off
-    document.getElementById("url").innerHTML=activeTab.url;
+    document.getElementById("url").innerHTML="URL: " + activeTab.url;
     // Send to server the url of the website
     var safeStatus = postData('http://143.198.97.103:8080/', { answer: activeTab.url })
     .then(data => {
@@ -156,9 +156,12 @@ function tabInfo(){
       anchor.innerHTML = "Tracker # " + trackerNumber + " Additional Info";
       var ul = document.getElementById("popupTrackerInfo");
       removeAllChildren(ul);
-      ul.appendChild(document.createTextNode("Tracker from Site: http://dangerous.com"));
-      ul.appendChild(document.createTextNode("Tracker Danger Level: High"));
-      ul.appendChild(document.createTextNode(""));
+      var li = document.createElement("li");
+      var li2 = document.createElement("li");
+      li.innerHTML = "Tracker from Site: http://dangerous.com";
+      ul.appendChild(li);
+      li2.innerHTML = "Tracker Danger Level: High";
+      ul.appendChild(li2);
       var popupButton = document.getElementById("popupButton");
       removeAllChildren(popupButton);
       var whitelistButton = document.createElement("button");
