@@ -1,7 +1,5 @@
 document.getElementById("toggle").addEventListener("click", tabInfo);
 
-
-
 function tabInfo(){
    
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -12,11 +10,12 @@ function tabInfo(){
         // // Make URL object
         var url = new URL(activeTab.url);
         console.log(activeTab.url);
-        document.getElementById("url").innerHTML=activeTab.url;
+        //document.getElementById("url").innerHTML=activeTab.url;
         //send to server the url of the website
         var safeStatus = postData('http://143.198.97.103:8080/', { addr: activeTab.url })
         .then(data => {
-            document.getElementById("response").innerHTML=data.Resp + "<br>";; // JSON data parsed by `data.json()` call
+            console.log(data);
+            document.getElementById("response").innerHTML=data.safestatus + "<br>"; // JSON data parsed by `data.json()` call
         });
         //console.log(safeStatus);
         //document.getElementById("response").innerHTML=safeStatus + "<br>";
@@ -36,7 +35,7 @@ function tabInfo(){
         // document.writeln("Protocol: " + protocol);
     
         //check if the on button for the extension is switched to on
-        if (document.getElementById("toggle").checked == false){
+        if (document.getElementById("toggle").checked == true){
             document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
             document.getElementById("intensityButtons").innerHTML='';
         }
@@ -45,14 +44,16 @@ function tabInfo(){
             chrome.cookies.getAll({"url":activeTab.url}, function (cookie){
             //document.writeln("Cookies detected: " + cookie.length);
             document.getElementById("trackers").innerHTML="Number of trackers on this website: " + cookie.length + '<br>';
+            
+            
             if (cookie.length > 0) {
                 console.log(cookie);
-                console.log(cookie[0]["domain"]);
+                // console.log(cookie[0]["domain"]);
             }
 
             });
             //buttons for different extension intensities
-            // document.getElementById("intensityButtons").innerHTML= '<p> How intense would you like the extension to work?</p> <br>' + '<input type="radio" name="favourite_colour"' +
+            // document.getElementById("intensityButtons").innerHTML= '<p> How intense would you like the extension to work?</p> <br>' + '<input type="radio" name="intensity"' +
             // 'value="low" checked> Low - only warns when there are 30 or more cookies <br>' + 
             // '<input type="radio" name="favourite_colour"' + 
             // 'value="medium"> Medium - only warns when there are 20 or more cookies<br>' + 
