@@ -9,9 +9,16 @@ var intensityButtonChecked = JSON.parse(localStorage.getItem("intensitySelection
 // Right now the site list reloads everytime the user closes/opens the extension
 // Need to add functionality to talk to the server to get updated list when
 // a user adds/ removes site
-var testWebsites = ["https://ucsd.edu", "https://google.com", "https://welcome.com",
-"https://fake1.com", "https://fake2.com", "https://fake3.com"];
-localStorage.setItem("sites", JSON.stringify(testWebsites));
+
+// Check if any sites are stored
+if (localStorage.getItem("sites") == null) {
+  var testWebsites = ["https://ucsd.edu", "https://google.com", "https://welcome.com",
+  "https://fake1.com", "https://fake2.com", "https://fake3.com"];
+  localStorage.setItem("sites", JSON.stringify(testWebsites));
+} else {
+  testWebsites = JSON.parse(localStorage.getItem("sites"));
+}
+
 
 // Tracker array for testing
 var testTrackers = ["123abc", "456def", "789ghi", "123jkl", "456mno", "789pqr"];
@@ -53,7 +60,6 @@ function tabInfo(){
     }
   })
   
-
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
     /* Display toggle switch and URL whether enabled/disabled */
@@ -116,9 +122,7 @@ function tabInfo(){
         numberButton.innerHTML = trackersArray.indexOf(item);
         numberButton.setAttribute('class', "listSeparation");
         numberButton.addEventListener("click", function() {
-          // Code here to load more tracker info
-          // Or something to help the user make the 
-          // decision to add the website to the list
+          // Expand the extra tracker info
           showExtraTrackerInfo(trackersArray.indexOf(item));
         }) 
         li.setAttribute('id', item);
@@ -164,7 +168,7 @@ function tabInfo(){
         var sites = localStorage.getItem("sites");
         var sitesArray = JSON.parse(sites)
         // Add this site to the site array unless it aleady exists
-        var siteToAdd = "http://dangerous" + trackerNumber + ".com";
+        var siteToAdd = activeTab.url;
         sitesArray.push(siteToAdd);
         // Update array in local storate
         localStorage.setItem("sites", JSON.stringify(sitesArray));
