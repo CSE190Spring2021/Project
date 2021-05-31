@@ -1,4 +1,4 @@
-const { computeHeadingLevel } = require("@testing-library/dom");
+// const { computeHeadingLevel } = require("@testing-library/dom");
 
 document.getElementById("toggle").addEventListener("click", tabInfo);
 
@@ -14,11 +14,13 @@ function tabInfo(){
         // // Make URL object
         var url = new URL(activeTab.url);
         console.log(activeTab.url);
+        
         document.getElementById("url").innerHTML=activeTab.url;
         //send to server the url of the website
-        var safeStatus = postData('http://143.198.97.103:8080/', { answer: activeTab.url })
+        var safeStatus = postData('http://143.198.97.103:8080/', { addr: activeTab.url })
         .then(data => {
-            document.getElementById("response").innerHTML=data.Resp + "<br>";; // JSON data parsed by `data.json()` call
+            console.log(data);
+            document.getElementById("response").innerHTML=data.safestatus + "<br>"; // JSON data parsed by `data.json()` call
         });
         //console.log(safeStatus);
         //document.getElementById("response").innerHTML=safeStatus + "<br>";
