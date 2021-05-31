@@ -22,6 +22,7 @@ var numberOfTrackersDetected = 3;
 // Set to easy = 15
 var trackerWarningThreshold = 16;
 
+// Listen for toggle button click
 document.getElementById("toggle").addEventListener("click", tabInfo);
 
 // This method runs when the user opens the extension
@@ -39,25 +40,14 @@ function tabInfo(){
   } else {
   // Else set intensity to persist from last session
     document.forms.intensityButtons.intensity.value = intensityButtonChecked;  
-    // Set the tracker warning threshold based on the value. 
-    switch (intensityButtonChecked) {
-      case "easy":
-        trackerWarningThreshold = 15;
-        break;
-      case "medium":
-        trackerWarningThreshold = 10;
-        break;
-      case "hard":
-        trackerWarningThreshold = 3;
-      //default:
-      //  trackerWarningThreshold = 15;
-    }
+    // Set the tracker warning threshold based on the value.
+    if (intensityButtonChecked == "easy")   { trackerWarningThreshold = 15; }
+    if (intensityButtonChecked == "medium") { trackerWarningThreshold = 10; }
+    if (intensityButtonChecked == "hard")   { trackerWarningThreshold = 3; }
   }
   // Listen for the user to change the intensity selection
   document.addEventListener('input', (e) => {
     if (e.target.getAttribute('name') == "intensity") {
-      // Set the change on the extension
-      //document.forms.intensityButtons.intensity.value = e.target.value;  
       // Store the change in local storage
       localStorage.setItem("intensitySelection", JSON.stringify(e.target.value));
     }
@@ -66,7 +56,7 @@ function tabInfo(){
 
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
-    /* Display toggle switch, URL and enabled/disabled message always */
+    /* Display toggle switch and URL whether enabled/disabled */
 
     // Should only be one tab so can just grab the first one
     var activeTab = tabs[0];
@@ -84,14 +74,12 @@ function tabInfo(){
     var toggleState = JSON.parse(localStorage.getItem("toggleState"));
     // Set toggle switch to correct state
     document.getElementById("toggle").checked = toggleState;
-
  
     /* Handle user enabling/disabling extension via toggle switch */
 
     // Toggle off extension disabled
     if (document.getElementById("toggle").checked == false){
       document.getElementById("enable").innerHTML = "Enable Extension?";
-      //document.getElementById("trackers").innerHTML="Extension disabled. Not counting trackers";
       // Delete the children of the "approvedWebsiteList" ul
       clearWebsiteList(); 
       // Make the div that holds all the enabled information hide
@@ -104,8 +92,6 @@ function tabInfo(){
       document.getElementById("trackers").innerHTML = trackersArray.length + " Trackers: (Click tracker number for more info)";
       document.getElementById("intensityQuestion").innerHTML = "How Intense do you want the extension to work?";
       document.getElementById("websiteList").innerHTML = "List of Approved Websites";
-      //document.getElementById("addQuestion").innerHTML = "Would you like to add this site to the list of approved sites?"
-
       // Add li children to the "trackerList" ul
       populateTrackerList();
       // Add li children to the "approvedWebsiteList" ul
@@ -114,14 +100,9 @@ function tabInfo(){
       document.getElementById("visible").style.display = "block";
     } 
 
-    /* Helper methods */
+    /* Methods to handle the tracker list and tracker additional info */
 
-
-    function addWebsiteToList () {
-      window.alert("add website method called");
-    }
-
-    // Method to dynamically add tracker names (li) items to an unordered list (ul)
+    // Add tracker names (li) items to an unordered list (ul)
     function populateTrackerList(){
       // Load and parse site list as an array
       var trackers = localStorage.getItem("trackers");
@@ -143,27 +124,33 @@ function tabInfo(){
         li.setAttribute('id', item);
         li.appendChild(numberButton);
         li.appendChild(document.createTextNode(item));
-        // Finally add the li to the il
+        // Finally add the li to the ul
         ul.appendChild(li);
       })
     }
 
-    
+    // Shows additional info about the tracker when its number is clicked
     function showExtraTrackerInfo(trackerNumber) {
-
-      // Clear previous tracker info      
-      var anchor = document.getElementById("popupTrackerHeadline");
-      anchor.innerHTML = "Tracker # " + trackerNumber + " Additional Info";
+      // Mark the node just below the tracker list 
+      var topNode = document.getElementById("popupTrackerHeadline");
+      topNode.innerHTML = "Tracker # " + trackerNumber + " Additional Info";
       var ul = document.getElementById("popupTrackerInfo");
-      removeAllChildren(ul);
+      // Clear the list
+      removeAllChildrenFromNode(ul);
+      // Populate site name
       var li = document.createElement("li");
       var li2 = document.createElement("li");
-      li.innerHTML = "Tracker from Site: http://dangerous.com";
+      li.innerHTML = "Tracker from Site: http://dangerous" + trackerNumber + ".com";
       ul.appendChild(li);
-      li2.innerHTML = "Tracker Danger Level: High";
+      // Populate site danver level
+      var dangerLevel = "Easy";
+      if (trackerNumber == 1) { dangerLevel = "Medium"};
+      if (trackerNumber == 2) { dangerLevel = "Hard"};
+      li2.innerHTML = "Tracker Danger Level: " + dangerLevel;
       ul.appendChild(li2);
+      // Add whitelist and close buttons
       var popupButton = document.getElementById("popupButton");
-      removeAllChildren(popupButton);
+      removeAllChildrenFromNode(popupButton);
       var whitelistButton = document.createElement("button");
       whitelistButton.innerHTML = "Whitelist this site";
       popupButton.appendChild(whitelistButton);
@@ -171,23 +158,33 @@ function tabInfo(){
       closeButton.innerHTML = "Close Additional Info";
       popupButton.appendChild(closeButton);
 
+      // Listen for white list click
       whitelistButton.addEventListener("click", function () {
-        addWebsiteToList();
+         // Load and parse site list as an array
+        var sites = localStorage.getItem("sites");
+        var sitesArray = JSON.parse(sites)
+        // Add this site to the site array unless it aleady exists
+        var siteToAdd = "http://dangerous" + trackerNumber + ".com";
+        sitesArray.push(siteToAdd);
+        // Update array in local storate
+        localStorage.setItem("sites", JSON.stringify(sitesArray));
+        // Then delete the list from the DOM
+        clearWebsiteList();
+        // And repopulate it
+        populateWebsiteList();
       })
+
+      // Listen for close additional info click
       popupButton.addEventListener("click", function () {
-        removeAllChildren(document.getElementById("popupTrackerHeadline"));
-        removeAllChildren(document.getElementById("popupTrackerInfo"));
-        removeAllChildren(document.getElementById("popupButton"));
+        removeAllChildrenFromNode(document.getElementById("popupTrackerHeadline"));
+        removeAllChildrenFromNode(document.getElementById("popupTrackerInfo"));
+        removeAllChildrenFromNode(document.getElementById("popupButton"));
       })
     }
 
-    function removeAllChildren(parentNode) {
-      while (parentNode.firstChild) {
-        parentNode.firstChild.remove();
-      }  
-    }
+    /* Methods to handle the website list */
 
-    // Method to dynamically add website names (li) items to an unordered list (ul)
+    // Add website names (li) items to an unordered list (ul)
     function populateWebsiteList(){
       // Load and parse site list as an array
       var sites = localStorage.getItem("sites");
@@ -204,7 +201,7 @@ function tabInfo(){
         button.setAttribute('class', "listSeparation");
         // Make button remove website from list when clicked
         button.addEventListener("click", function() {
-          removeItem(item);
+          removeItemFromDOM(item);
           // Delete the item from the sites array
           sitesArray.splice(sitesArray.indexOf(item), 1);
           // Update sites array in local storage
@@ -220,31 +217,37 @@ function tabInfo(){
       })
     }
 
-    // Method to dynamically delete website names (li) items from an unordered list (ul) 
+    // Delete website names (li) items from an unordered list (ul) 
     function clearWebsiteList(){
       // Load and parse site list as an array
       var sites = localStorage.getItem("sites");
       var sitesArray = JSON.parse(sites);
       // For each site in the array, locate it and delete it from DOM
       sitesArray.forEach((item) => {
-        removeItem(item);
+        removeItemFromDOM(item);
       })
     }
   
-    // Method to remove an item from the DOM if it exists
-    function removeItem(item) {
+    /* Helper Methods */
+
+    // Remove one node from the DOM if it exists
+    function removeItemFromDOM(item) {
       var toRemove = document.getElementById(item);
       if (toRemove != null) {
         toRemove.parentElement.removeChild(toRemove);
       }
     }
+
+    // Remove all children of a DOM node
+    function removeAllChildrenFromNode(parentNode) {
+      while (parentNode.firstChild) {
+        parentNode.firstChild.remove();
+      }  
+    }
   }); // chrome.tabs.query () end
 } // tabInfo() end
 
-  
-        /*
-
-
+/* Old code
 //console.log(safeStatus);
       //document.getElementById("response").innerHTML=safeStatus + "<br>";
 
@@ -261,20 +264,16 @@ function tabInfo(){
       // document.writeln("Top-level Domain: " + tld);
       // document.writeln("Protocol: " + protocol);
 
-          //document.writeln("Cookies detected: " + cookie.length);
-            document.getElementById("trackers").innerHTML="Number of trackers on this website: " + cookie.length + '<br>';
-            if (cookie.length > 0) {
-                console.log(cookie);
-                console.log(cookie[0]["domain"]);
-            }
-       
-
-      
-
+      //document.writeln("Cookies detected: " + cookie.length);
+        document.getElementById("trackers").innerHTML="Number of trackers on this website: " + cookie.length + '<br>';
+        if (cookie.length > 0) {
+            console.log(cookie);
+            console.log(cookie[0]["domain"]);
+        }
   });
-
 }
 */
+
 // Example POST method implementation:
 async function postData(url = '', data = {}) {
     // Default options are marked with *
