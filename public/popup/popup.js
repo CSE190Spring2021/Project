@@ -12,6 +12,7 @@ var intensityButtonChecked = JSON.parse(localStorage.getItem("intensitySelection
 
 // Check if any sites are stored
 if (localStorage.getItem("sites") == null) {
+  // If not populate with some
   var testWebsites = ["https://ucsd.edu", "https://google.com", "https://welcome.com",
   "https://fake1.com", "https://fake2.com", "https://fake3.com"];
   localStorage.setItem("sites", JSON.stringify(testWebsites));
@@ -106,6 +107,9 @@ function tabInfo(){
       document.getElementById("visible").style.display = "block";
     } 
 
+    // Whitelist site button 
+
+
     /* Methods to handle the tracker list and tracker additional info */
 
     // Add tracker names (li) items to an unordered list (ul)
@@ -147,10 +151,10 @@ function tabInfo(){
       li.innerHTML = "Tracker from Site: http://dangerous" + trackerNumber + ".com";
       ul.appendChild(li);
       // Populate site danver level
-      var dangerLevel = "Easy";
-      if (trackerNumber == 1) { dangerLevel = "Medium"};
-      if (trackerNumber == 2) { dangerLevel = "Hard"};
-      li2.innerHTML = "Tracker Danger Level: " + dangerLevel;
+      var dangerLevel = "We think this site is ok";
+      if (trackerNumber == 1) { dangerLevel = "Use this site with caution"};
+      if (trackerNumber == 2) { dangerLevel = " *** Do not use this site! *** "};
+      li2.innerHTML = "Our Recommendation: " + dangerLevel;
       ul.appendChild(li2);
       // Add whitelist and close buttons
       var popupButton = document.getElementById("popupButton");
