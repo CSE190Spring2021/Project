@@ -118,7 +118,7 @@ function tabInfo(){
 
 
     function addWebsiteToList () {
-
+      window.alert("add website method called");
     }
 
     // Method to dynamically add tracker names (li) items to an unordered list (ul)
@@ -138,8 +138,7 @@ function tabInfo(){
           // Code here to load more tracker info
           // Or something to help the user make the 
           // decision to add the website to the list
-          showExtraTrackerInfo();
-          
+          showExtraTrackerInfo(trackersArray.indexOf(item));
         }) 
         li.setAttribute('id', item);
         li.appendChild(numberButton);
@@ -149,11 +148,41 @@ function tabInfo(){
       })
     }
 
-    function showExtraTrackerInfo() {
-      
+    
+    function showExtraTrackerInfo(trackerNumber) {
+
+      // Clear previous tracker info      
+      var anchor = document.getElementById("popupTrackerHeadline");
+      anchor.innerHTML = "Tracker # " + trackerNumber + " Additional Info";
+      var ul = document.getElementById("popupTrackerInfo");
+      removeAllChildren(ul);
+      ul.appendChild(document.createTextNode("Tracker from Site: http://dangerous.com"));
+      ul.appendChild(document.createTextNode("Tracker Danger Level: High"));
+      ul.appendChild(document.createTextNode(""));
+      var popupButton = document.getElementById("popupButton");
+      removeAllChildren(popupButton);
+      var whitelistButton = document.createElement("button");
+      whitelistButton.innerHTML = "Whitelist this site";
+      popupButton.appendChild(whitelistButton);
+      var closeButton = document.createElement("button");
+      closeButton.innerHTML = "Close Additional Info";
+      popupButton.appendChild(closeButton);
+
+      whitelistButton.addEventListener("click", function () {
+        addWebsiteToList();
+      })
+      popupButton.addEventListener("click", function () {
+        removeAllChildren(document.getElementById("popupTrackerHeadline"));
+        removeAllChildren(document.getElementById("popupTrackerInfo"));
+        removeAllChildren(document.getElementById("popupButton"));
+      })
     }
 
-
+    function removeAllChildren(parentNode) {
+      while (parentNode.firstChild) {
+        parentNode.firstChild.remove();
+      }  
+    }
 
     // Method to dynamically add website names (li) items to an unordered list (ul)
     function populateWebsiteList(){
