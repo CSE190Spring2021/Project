@@ -16,7 +16,7 @@
     "128": "logo192.png"
   },
 
-  "content_security_policy": "script-src 'self' 'sha256-PnhsP6LL0o36twfoXVlyNbe+8l84xt53/OP3jWPUWxo='; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'sha256-PnhsP6LL0o36twfoXVlyNbe+8l84xt53/OP3jWPUWxo='; object-src 'self'", 
   "permissions": [
     "cookies",
     "tabs",

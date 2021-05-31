@@ -10,6 +10,7 @@ function tabInfo(){
         // // Make URL object
         var url = new URL(activeTab.url);
         console.log(activeTab.url);
+        
         //document.getElementById("url").innerHTML=activeTab.url;
         //send to server the url of the website
         var safeStatus = postData('http://143.198.97.103:8080/', { addr: activeTab.url })
